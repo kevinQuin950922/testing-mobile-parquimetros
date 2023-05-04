@@ -9,8 +9,10 @@ import net.serenitybdd.screenplay.Task;
 import net.serenitybdd.screenplay.actions.Clear;
 import net.serenitybdd.screenplay.actions.Click;
 import net.serenitybdd.screenplay.actions.Enter;
+import net.serenitybdd.screenplay.waits.WaitUntil;
 
 import static net.serenitybdd.screenplay.Tasks.instrumented;
+import static net.serenitybdd.screenplay.matchers.WebElementStateMatchers.isCurrentlyVisible;
 
 public class IniciarSesionUsuarioYContrasenaCorrectos implements Task {
     private final UserModel userModel;
@@ -29,6 +31,7 @@ public class IniciarSesionUsuarioYContrasenaCorrectos implements Task {
 
     @Override
     public <T extends Actor> void performAs(T actor) {
+        actor.attemptsTo(WaitUntil.the(IniciarSesion.USER,isCurrentlyVisible()).forNoMoreThan(10).seconds());
         actor.attemptsTo(
                 Clear.field(IniciarSesion.USER),
                 Click.on(IniciarSesion.USER)

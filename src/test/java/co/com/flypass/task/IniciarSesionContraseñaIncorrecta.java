@@ -7,9 +7,11 @@ import co.com.flypass.utils.keyBoard.TecleoUsuario;
 import net.serenitybdd.screenplay.Actor;
 import net.serenitybdd.screenplay.Task;
 import net.serenitybdd.screenplay.actions.*;
+import net.serenitybdd.screenplay.waits.WaitUntil;
 
 
 import static net.serenitybdd.screenplay.Tasks.instrumented;
+import static net.serenitybdd.screenplay.matchers.WebElementStateMatchers.isCurrentlyVisible;
 
 
 public class IniciarSesionContraseñaIncorrecta implements Task {
@@ -28,6 +30,7 @@ public class IniciarSesionContraseñaIncorrecta implements Task {
 
     @Override
     public <T extends Actor> void performAs(T actor) {
+        actor.attemptsTo(WaitUntil.the(IniciarSesion.USER,isCurrentlyVisible()).forNoMoreThan(10).seconds());
         actor.attemptsTo(
                 Clear.field(IniciarSesion.USER),
                 Click.on(IniciarSesion.USER)
