@@ -1,29 +1,53 @@
 package co.com.flypass.utils.dynamodb;
 
 
+import com.amazonaws.auth.AWSCredentialsProvider;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
+import com.amazonaws.client.builder.AwsClientBuilder;
+import com.amazonaws.regions.Regions;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
-import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
-import software.amazon.awssdk.auth.credentials.AwsSessionCredentials;
+import com.amazonaws.services.dynamodbv2.document.DynamoDB;
+import org.seleniumhq.jetty9.util.security.CredentialProvider;
+import software.amazon.awssdk.auth.credentials.*;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
+
+import java.net.URI;
+
+import static javax.crypto.Cipher.SECRET_KEY;
 
 public class ClienteDynamo {
 
     public static DynamoDbClient conexionDynamo() {
-        AwsSessionCredentials credentials = AwsSessionCredentials.create(
-                "ASIAZE7LHG2AVYWW7VRH",
-                "v9zdgTN7aaZBcK2YQIBUrcfgqDCN3MhSLDLML7MC",
-                "IQoJb3JpZ2luX2VjELj//////////wEaCXVzLWVhc3QtMSJGMEQCIHM38uoqPSkgALZrVUDglcFtkzCpcwqpWs+X6p+R+lK9AiAuOteDylbkui7/bjeXShudKLG5PaJWE/bCt/cnnp7cyiqUAwix//////////8BEAAaDDYyOTE2OTE0MTM3NyIMNMRG8VsA+Ft+99UYKugCadzgv2X/MDjE4Rvho3S24LoTLyLxslrYdp8I+u1OyIgdT55pGrmZiN8oB8M3Xscjn94pQJpELa7BvT1D3YHH068TnFBDUDqSBi/gPzQp+aINSvvas+jTD6WqMB9utEB/UzmAFMMCW90ngQjk+lQHwpkh6YpGNUlShPlmrzj2jakHO57ankk806w/6IVDV19qgZxP3a4/m2M2R0gYEZCy1a8XQClqyYGVnK+/u3IbnCN6oCyFnIex5+PaLwLTtVoLN0s21kv60KILl8PsVtOCmn/t2hSD4/g3B6rrx1Rb6NNPJRCuyYzA/Kzgj2L33hFVbo0mtVfvF96Lo6ajcGbJ9BF+UFtN5883N/GYvyO52dsPm2BGY/jxl3By8WOnIqxOe/V+FNIRcSVRFJIRAVhL9XuP2zJUgF+8R2wMe3n9oaszT1gvRckiGEHhJbPSXIOPDWWtOVDID3HJWcGPfQXXAAlHG57sVj4IMNi5jKIGOqcBYdsqHbYXLextDpdqDrvnrD2OI4TGxvq3gRH3aWfoSXTIiSY+gwsxeOEpVPr7UIqx5vcCtm6CdfUoPx8ErKjiD6T8o2KIGx5uhQ61hktQK27al8FtOpwwLZNOGvUeIhrlyizVBsnvN56oh39JH6gx2qEL77UprfmzKOV2DcGoc4OBPBJNNtwi4r9UrndTlG30PNfNrS9x2h1hkWpoQMliGCl/GDswkpM="
-        );
+//        // Obtener las credenciales de AWS
+        String accessKey = "ASIAZE7LHG2A26MU4LU3";
+        String secretKey = "yZ2TUDLiwJN04u1sCn9TPinlwY6+n6EJHKcOJXmw";
+        String token = "IQoJb3JpZ2luX2VjEKf//////////wEaCXVzLWVhc3QtMSJGMEQCIB7igV3wMLM/aJ1Ooxm37nMchVSFaVniW76sqlpIvIkdAiAaYKdhtl5RVtLLUy3YacFOmbomiLDXfilooB+ocKiBTiqTAwjA//////////8BEAAaDDYyOTE2OTE0MTM3NyIMl25q2W3ehRfM0tbnKucCLIN2uGnCFoGslGLMEIENzhdJmMCKzag9ZuDKTZ+Vnf3F5+YBWddIT0duyVqk5sMLbsTH/BAfu4p9hBsOC6LE0yjLt567LQa1ZGZpKHyu9fZbXrrGIGt+vw3Yu/IIJM+Ejcb54UfmmdC2paS3T4Ml5OY4BVTlog6GySpifNI+DaRyFsQG1+g3g7798mA7DRsYT2Ww9dp0ozIMz7Mpq2ox/vwLbHNxE3QBAbDzQOMQT8G3YqEtNkEQj5c1dlWm6MzHqcbBoC65yeYTLvqdvPPao6gHGu/Jvkk7mQxr86YqJGdCVvsZePr2pFovg7DZSudmded+yE/sBzQt/fMMj8DN/pifMnQLV3sziB55PPfoLsw0GbLjDhnUAGO1yt32RE1w6SeATvUGMzek914Z9wPrdsVEZekcTca7K2JdH7Xdzwjhh82q7PFA6yoRFSAn1sQDGBkMYlrhWNWo+i324mkv23AutiNonQswqKH5ogY6pwFKn0E70wph19pkwWVw23Wc80OIn0sACCiPuqkLopkpgZj8YOxBX7WpvKGk4coqTu3OzRbSs8cX246TNeCEDKmZBe06Ogdoy+VzIwpYckBr0wxKrcEqUYKOHHPTFhuGI8WkClR45dglWJWBCMFi8tUmbI+thaZoJc0Vj8ZdnzQNuwNoSMlZXwujpEzR478UVtq4fv+hkPknOPurQsuPkbt4CHBL/e6ajg==";        System.setProperty("aws.accessKeyId", accessKey);
+        System.setProperty("aws.accessKeyId", accessKey);
+        System.setProperty("aws.secretAccessKey",secretKey);
+        System.setProperty("aws.sessionToken",token);
 
-        AwsCredentialsProvider provider = () -> credentials;
-        DynamoDbClient client = DynamoDbClient.builder()
-                .region(Region.US_EAST_1)
-                .credentialsProvider(provider)
+//
+//
+//        AwsClientBuilder.EndpointConfiguration endpointConfiguration = new AwsClientBuilder.EndpointConfiguration("https://flypass.awsapps.com/start#","us-east-1");
+//        BasicAWSCredentials credentials = new BasicAWSCredentials(accessKey, secretKey);
+//        AmazonDynamoDB client = AmazonDynamoDBClientBuilder.standard()
+//                .withCredentials(new AWSStaticCredentialsProvider(credentials))
+//                .withEndpointConfiguration(endpointConfiguration)
+//                .build();
+
+
+//        // Crear el cliente de DynamoDB
+        Region region = Region.US_EAST_1;
+        DynamoDbClient dynamoDB = DynamoDbClient.builder()
+                .endpointOverride(URI.create("https://flypass.awsapps.com/start#"))
+                .region(region)
+                .credentialsProvider(SystemPropertyCredentialsProvider.create())
                 .build();
-
-        return client;
+        return dynamoDB;
     }
 }
