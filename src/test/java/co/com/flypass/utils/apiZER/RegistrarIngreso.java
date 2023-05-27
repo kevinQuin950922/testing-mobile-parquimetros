@@ -3,7 +3,9 @@ package co.com.flypass.utils.apiZER;
 import co.com.flypass.utils.apiFlypass.CreateTransaction;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
+import net.serenitybdd.junit.runners.SerenityRunner;
 import org.json.JSONObject;
+import org.junit.runner.RunWith;
 
 import java.io.IOException;
 import java.util.ArrayList;

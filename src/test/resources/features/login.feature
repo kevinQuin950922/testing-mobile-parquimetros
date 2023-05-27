@@ -1,4 +1,4 @@
-Feature: Login Error
+Feature: Login
   Como un usuario de flaypass
   Quiero autenticarme en la aplicacion
   para que verifique las credenciales

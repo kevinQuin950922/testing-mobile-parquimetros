@@ -26,18 +26,12 @@ public class IniciarSesionContraseñaIncorrecta implements Task {
         return instrumented(IniciarSesionContraseñaIncorrecta.class,userIncorrecto);
     }
 
-    TecleoUsuario tecleoUsuario = new TecleoUsuario();
-
     @Override
     public <T extends Actor> void performAs(T actor) {
         actor.attemptsTo(WaitUntil.the(IniciarSesion.USER,isCurrentlyVisible()).forNoMoreThan(10).seconds());
         actor.attemptsTo(
                 Clear.field(IniciarSesion.USER),
-                Click.on(IniciarSesion.USER)
-
-        );
-        tecleoUsuario.usuarioCorrecto();
-        actor.attemptsTo(
+                Enter.theValue(userModel.getCedula()).into(IniciarSesion.USER),
                 Click.on(IniciarSesion.BUTTON_CONTINUAR),
                 Enter.theValue(userModel.getContrasena()).into(IniciarSesion.USER),
                 Click.on(IniciarSesion.BUTTON_CONTINUAR)
