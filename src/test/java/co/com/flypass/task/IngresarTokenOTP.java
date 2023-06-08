@@ -6,13 +6,15 @@ import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.android.AndroidElement;
 import net.serenitybdd.screenplay.Actor;
 import net.serenitybdd.screenplay.Task;
-import net.serenitybdd.screenplay.actions.Click;
 import net.serenitybdd.screenplay.actions.Enter;
+import net.serenitybdd.screenplay.conditions.Check;
+import net.serenitybdd.screenplay.waits.Wait;
 import net.thucydides.core.webdriver.WebDriverFacade;
 
 import java.sql.SQLException;
 import java.time.Duration;
 
+import static java.lang.Thread.sleep;
 import static net.serenitybdd.screenplay.Tasks.instrumented;
 import static net.thucydides.core.webdriver.ThucydidesWebDriverSupport.getDriver;
 
@@ -24,16 +26,15 @@ public class IngresarTokenOTP implements Task {
     public static IngresarTokenOTP ingresarToken(){
         return instrumented(IngresarTokenOTP.class);
     }
+
     @Override
     public <T extends Actor> void performAs(T actor) {
-        actor.attemptsTo(Click.on(IniciarSesion.CODIGO_SEGURIDAD.waitingForNoMoreThan(Duration.ofSeconds(10))));
         try {
-            String otp = ConectionBd.consultTable("select * from tfps_otp_usuarios where cdusuario=35925 order by fevencimiento desc", "dsotp");
-            actor.attemptsTo(
-                    Enter.theValue(otp).into(IniciarSesion.CODIGO_SEGURIDAD)
-            );
-        } catch (
-                SQLException e) {
+            actor.attemptsTo(Check.whether(IniciarSesion.PAGINA_OTP.resolveFor(actor).isCurrentlyVisible())
+                    .andIfSo(
+                            Enter.theValue(ConectionBd.consultTable("select * from tfps_otp_usuarios where cdusuario=35925 order by fevencimiento desc", "dsotp")).into(IniciarSesion.CODIGO_SEGURIDAD)
+                    ).otherwise());
+        } catch (SQLException e) {
             throw new RuntimeException(e);
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);

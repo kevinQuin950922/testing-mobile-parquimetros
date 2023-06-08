@@ -1,6 +1,7 @@
 package co.com.flypass.task;
 
 import co.com.flypass.userinterface.IniciarSesion;
+import co.com.flypass.userinterface.Notificaciones;
 import co.com.flypass.userinterface.PaginaPrincipal;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.android.AndroidElement;
@@ -9,6 +10,7 @@ import net.serenitybdd.screenplay.Task;
 import net.serenitybdd.screenplay.actions.Clear;
 import net.serenitybdd.screenplay.actions.Click;
 import net.serenitybdd.screenplay.actions.Enter;
+import net.serenitybdd.screenplay.conditions.Check;
 import net.serenitybdd.screenplay.waits.WaitUntil;
 import net.thucydides.core.webdriver.WebDriverFacade;
 
@@ -24,7 +26,11 @@ public class IngresarPantallaNotificaciones implements Task {
     @Override
     public <T extends Actor> void performAs(T actor) {
         actor.attemptsTo(
-            Click.on(PaginaPrincipal.NOTIFICACIONES)
+            Check.whether(PaginaPrincipal.IR_TRANSACCION.resolveFor(actor).isCurrentlyVisible())
+                    .andIfSo(
+                            Click.on(PaginaPrincipal.ELIMINAR_NOTIFICACION)
+                    ).otherwise(),
+                Click.on(PaginaPrincipal.NOTIFICACIONES)
         );
     }
 }

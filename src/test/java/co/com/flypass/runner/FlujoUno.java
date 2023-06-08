@@ -9,7 +9,7 @@ import org.junit.runner.RunWith;
 @CucumberOptions(
         features = "src/test/resources/features/flujoUno.feature",
         glue = "co.com.flypass.stepDefinitions",
-        tags="@test",
+        tags="@flujouno",
         snippets = SnippetType.CAMELCASE
 )
 public class FlujoUno {

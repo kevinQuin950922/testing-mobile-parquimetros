@@ -9,7 +9,7 @@ import org.junit.runner.RunWith;
 @CucumberOptions(
         features = "src/test/resources/features/login.feature",
         glue = "co.com.flypass.stepDefinitions",
-        tags="@test",
+        tags="@iniciarSesion",
         snippets = SnippetType.CAMELCASE
 )
 
