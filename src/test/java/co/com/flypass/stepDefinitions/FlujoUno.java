@@ -23,32 +23,17 @@ import static net.serenitybdd.screenplay.questions.WebElementQuestion.the;
 
 public class FlujoUno {
 
-    @Given("^Se tiene una transacción por cobrar$")
-    public void seTieneUnaTransacciónPorCobrar() {
-        CreateTransaction createTransaction = new CreateTransaction();
-        createTransaction.createTransactionFromASF("ABC185","60","40800");
-    }
-
-    @When("^Cuando llegue la notificación$")
-    public void cuandoLlegueLaNotificación() {
-        theActorCalled("kevin").attemptsTo(IngresarPantallaNotificaciones.ingresarPantallaNotificaciones());
-    }
-
-    @Then("^Se valida que el mensaje esté de forma correcta$")
-    public void seValidaQueElMensajeEstéDeFormaCorrecta() {
-        OnStage.theActorInTheSpotlight().should(seeThat(the(Notificaciones.NOTIFICACION),containsOnlyText("Tienes un nuevo cobro de tasa de uso Z.E.R")));
-    }
-
     @Given("^Se tiene una transacción activa$")
     public void seTieneUnaTransacciónActiva() {
-        // Write code here that turns the phrase above into concrete actions
+        CreateTransaction createTransaction = new CreateTransaction();
+        createTransaction.createTransactionFromASF("ABC185","60","40800");
         theActorCalled("kevin").attemptsTo(IngresarPantallaNotificaciones.ingresarPantallaNotificaciones());
     }
 
     @When("^Cuando se ingrese a la notificacion$")
     public void cuandoSeIngreseALaNotificacion() {
+        OnStage.theActorInTheSpotlight().should(seeThat(the(Notificaciones.NOTIFICACION),containsOnlyText("Tienes un nuevo cobro de tasa de uso Z.E.R")));
         theActorCalled("kevin").attemptsTo(IngresarNotificacion.ingresarNotificacion());
-
     }
 
     @Then("^Se valida que se pueda denegar el servicio$")
